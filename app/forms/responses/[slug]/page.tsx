@@ -7,12 +7,33 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getResponsesSumaryFromUser } from '@/lib/actions/actions';
+import { type Form, type Question, Prisma, type Option } from '@prisma/client';
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
 
-const transformData = (data: any) => {
-  const questionIdCount = {} as any;
-  data.forEach((item: any) => {
+type QuestionWithOptionsWithAnswer = Prisma.QuestionGetPayload<{
+  include: {
+    answers: {
+      include: {
+        option: true;
+      };
+    };
+  };
+}>;
+
+function transformData(optionsData: (Option | null)[]) {
+  type QuestionIdCount = {
+    [key: string]: {
+      name: string;
+      value: number;
+    };
+  };
+  const questionIdCount: QuestionIdCount = {};
+
+  optionsData.forEach((item) => {
+    if (item === null) {
+      return;
+    }
     if (!questionIdCount[item.id]) {
       questionIdCount[item.id] = { name: item.optionText, value: 1 };
     } else {
@@ -21,10 +42,11 @@ const transformData = (data: any) => {
   });
 
   const result = Object.values(questionIdCount);
-  return result;
-};
 
-function Question({ question }: any) {
+  return result;
+}
+
+function Question({ question }: { question: QuestionWithOptionsWithAnswer }) {
   if (question.type === 'SHORT_RESPONSE') {
     return (
       <Card className='col-span-3 mt-8'>
