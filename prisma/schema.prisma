@@ -128,7 +128,7 @@ model Option{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   questionId String
-  optionText String @default("")
+  optionText String 
   question Question @relation(fields: [questionId], references: [id])
   order Int @default(0)
   answers Answer[]

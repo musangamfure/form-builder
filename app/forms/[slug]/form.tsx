@@ -12,12 +12,13 @@ import {
   updateFormFromUser,
   updateOptionText,
   updateQuestionFromUser,
-} from '@/lib/actions';
+} from '@/lib/actions/actions';
 import { MoveLeft, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import QuestionCommand from '@/components/Command';
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -39,7 +40,7 @@ function QuestionForm({
   formId,
   questions,
   title,
-  createQuestion,
+  createShortResponseQuestion,
   deleteQuestion,
   togglePublishFormFromUser,
   form,
@@ -51,7 +52,7 @@ function QuestionForm({
   formId: string;
   questions: any;
   title: string;
-  createQuestion: any;
+  creatShortResponseQuestion: any;
   deleteQuestion: any;
   togglePublishFormFromUser: any;
   form: any;
@@ -91,10 +92,21 @@ function QuestionForm({
     500
   );
 
+  const [openQuestionCommand, setOpenQuestionCommand] = useState(false);
+  const [newElementOrder, setNewElementOrder] = useState(questions.length + 1);
+
   return (
     <div className='mx-auto my-6 mt-16 sm:my-24 w-full max-full max-w-xs sm:max-w-4xl'>
       <div className=''>
         <div className='my-10'>
+          <QuestionCommand
+            open={openQuestionCommand}
+            setOpen={setOpenQuestionCommand}
+            newElementOrder={newElementOrder}
+            formId={formId}
+            createShortResponseQuestion={createShortResponseQuestion}
+            createOptionQuestion={createOptionQuestion}
+          />
           <Link href={`/forms`}>
             <div className=' flex items-center'>
               {
@@ -124,7 +136,7 @@ function QuestionForm({
             size='sm'
             className='mt-2'
             onClick={async () => {
-              await createQuestion(formId, questions.length);
+              await createShortResponseQuestion(formId, questions.length + 1);
             }}
           >
             Add Question
@@ -135,7 +147,7 @@ function QuestionForm({
             size='sm'
             className='mt-2'
             onClick={async () => {
-              await createOptionQuestion(formId, questions.length);
+              await createOptionQuestion(formId, questions.length + 1);
             }}
           >
             Add Option Question
@@ -222,7 +234,8 @@ function QuestionForm({
                         <Plus
                           className='text-gray-700'
                           onClick={async () => {
-                            await createQuestion(formId, element.order + 1);
+                            setNewElementOrder(element.order + 1);
+                            setOpenQuestionCommand(true);
                           }}
                         />
                       </div>
@@ -265,7 +278,8 @@ function QuestionForm({
                         <Plus
                           className='text-gray-700'
                           onClick={async () => {
-                            await createQuestion(formId, element.order + 1);
+                            setNewElementOrder(element.order + 1);
+                            setOpenQuestionCommand(true);
                           }}
                         />
                       </div>

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { createForm } from '@/lib/actions';
+import { createForm } from '@/lib/actions/actions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
